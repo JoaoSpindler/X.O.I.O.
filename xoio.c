@@ -208,7 +208,7 @@ do
             char str_memoria_quente[6];
             char str_memoria_vm[55];//Pode se usar a variavel usada anteriormente
 //=====================================================================================================================
-            strncpy(str_id_vm_aux, matrix_vm_list [xl_list_line_couter], 47);//Preparação para o ID atual da VM
+            printf ("Impressão de controle 01: %s\n", strncpy(str_id_vm_aux, matrix_vm_list [xl_list_line_couter], 47));//Preparação para o ID atual da VM
             str_id_vm_aux[55] = '\0';
             e = strlen(str_id_vm_aux);
             for (c = e; c >= 0; c--)
@@ -216,20 +216,33 @@ do
                if (( str_id_vm_aux[c] != ' ') && ( str_id_vm_aux[c] != '\n') && ( str_id_vm_aux[c] != '\0'))
                {
                   str_id_vm_invertida[d] = str_id_vm_aux[c];
+                  printf ("Impressão de controle 03: .%c.\nvalor de ", str_id_vm_aux[c]);
                   d++;
                   if ( str_id_vm_aux[c-1] == ' ')
-                     break;
-               }
+                      break;   
+               }               
             }
             str_id_vm_invertida[d] = '\0';
             z = strlen(str_id_vm_invertida);
             q = 0;
-            for (d=z-1; d>=0; d--)//str_memoria_quente_invertida
+            printf ("Indexador \"z\": %i\n",z); 
+            printf ("O valor de str_id_vm_invertida é: _-%s-_\n", str_id_vm_invertida);
+            for (d=z; d>=0; d--)//str_memoria_quente_invertida
             {
-               str_id_vm[q] = str_id_vm_invertida[d];
-               q++;
+               if (str_id_vm_invertida[d] )//!= ' ')
+               {
+				   str_id_vm[q] = str_id_vm_invertida[d];
+                   printf ("Impressão de controle 05: laço %i: %s\n",d, str_id_vm);
+                   printf ("Impressão de controle 04: laço %i: %c-\n",d, str_id_vm_invertida[d]);
+                   q++;
+                   //if (( str_id_vm_invertida[d-1] == ' ') || ( str_id_vm_invertida[d-1] != '\0'))
+                   //   break;   
+		       }		       
+		       
             }
+            str_id_vm[q] = '\0';
             str_memoria_quente[q] = '\0';
+            printf ("A VM_ID é: #%s#\n", str_id_vm);
 //========================================================================================================================
             e = 0;
             c = 0;
@@ -356,6 +369,7 @@ do
             strcat (cmd_snmp, cmd_snmp_aux2);
             strcat (cmd_snmp, cmd_snmp_aux3);
             system (cmd_snmp);
+            printf ("\nComando SNMP: #%s# ", cmd_snmp);
  //     sleep(10);
             char *char_pointer_snmp_mem_total_free;//recebe o conteudo do arquivo gerado pelo snmp
             char *char_pointer_linha_snmp;
@@ -374,6 +388,7 @@ do
             while (1)
             {
                char_pointer_linha_snmp = fgets (matrix_snmp [i], 100, file_pointer_snmp);//Lê as linhas salvas no arquivo
+               //printf("\nLinha .SNMP.TXT: %s",char_pointer_linha_snmp);
                if (char_pointer_linha_snmp == NULL)
                   break;
                i++;
@@ -381,10 +396,12 @@ do
             for (j=0; j < i; j++)
             {
                char_pointer_linha_snmp = matrix_snmp[j];
-               if (strncmp (char_pointer_linha_snmp, "UCD-SNMP-MIB::memTotalFree.0 = INTEGER: ", 40) == 0)//Início das rotinas de "snmp memtotalfree"
+               printf("\nLinha .SNMP.TXT: %s",char_pointer_linha_snmp);
+               //if (strncmp (char_pointer_linha_snmp, "UCD-SNMP-MIB::memTotalFree.0 = INTEGER: ", 44) == 0)//Início das rotinas de "snmp memtotalfree"
+               if (strncmp (char_pointer_linha_snmp, "iso.3.6.1.4.1.2021.4.11.0 = INTEGER: ", 37) == 0)//Início das rotinas de "snmp memtotalfree"
                {  
                   char_pointer_snmp_mem_total_free = strstr(char_pointer_linha_snmp, " ");
-//                  printf("\nLinha cortada? %s", char_pointer_snmp_mem_total_free);
+                  printf("\nLinha cortada? %s", char_pointer_snmp_mem_total_free);
                   l = strlen(char_pointer_snmp_mem_total_free);
                   for ( k = l; k >= 0; k--)
                   {
@@ -399,7 +416,7 @@ do
                   }
                   if (index_snmp <50)
                      str_snmp_mem_total_free_aux[index_snmp] = '\0';
-//            printf("\nSNMP INVERTIDO: %s", str_snmp_mem_total_free_aux) ;
+            printf("\nSNMP INVERTIDO: %s", str_snmp_mem_total_free_aux) ;
                }//Fim das rotinas de "snmp memtotalfree"
             }
             desvira = strlen(str_snmp_mem_total_free_aux); 
@@ -426,7 +443,7 @@ do
             
             snmp = atoi (str_snmp_mem_total_free);
             memoria_livre = snmp/1024;
-//            printf("\nValores lidos: (string) \nVM: ID %s %s \nIp: %s \nMemória Mínima: %s MB\nMemória Máxima: %s MB\nMemória Atual: %s MB\nMemória Livre: %s MB\n", str_id_vm, char_pointer_nome_vm, str_vif, str_memory ,str_maxmem, str_memoria_quente, str_snmp_mem_total_free);
+            printf("\nValores lidos: (string) \nVM: ID %s %s \nIp: %s \nMemória Mínima: %s MB\nMemória Máxima: %s MB\nMemória Atual: %s MB\nMemória Livre: %s MB\n", str_id_vm, char_pointer_nome_vm, str_vif, str_memory ,str_maxmem, str_memoria_quente, str_snmp_mem_total_free);
 
             libera = atoi (str_libera);
             recupera = atoi (str_recupera);
@@ -504,7 +521,7 @@ do
                      else
                      {
                         memoria_liberada = memoria_minima;
-                        printf("\nA memória total será %i:\n", memoria_liberada);
+                        printf("\nA memória total será %i|\n", memoria_liberada);
                      strcpy (cmd_snmp_aux1, "xl mem-set ");
                      strcat (cmd_snmp_aux1, str_id_vm);//ip da máquina lido no arquivo
                      strcpy (cmd_snmp_aux2, " ");
